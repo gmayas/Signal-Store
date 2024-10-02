@@ -9,17 +9,15 @@ import { ProductCardComponent } from '../../ui/product-card/product-card.compone
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss',
   providers: [ProductsStateService]
-
 })
+//
 export default class ProductListComponent {
   //
-  public productsState = inject(ProductsStateService);  
-  
-  
-  constructor() { }
-
-  
-
-  
-
+  public productsState = inject(ProductsStateService);
+  //  
+  changePage() {
+    const page = this.productsState.state.page() + 1;
+    this.productsState.chagePage$.next(page);
+  }
+  //
 }

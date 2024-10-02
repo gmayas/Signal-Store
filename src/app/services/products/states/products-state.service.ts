@@ -1,49 +1,50 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Product } from '../../../shared/interfaces/product.interface';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { ProductsService } from '../products.service';
-import { BehaviorSubject, map } from 'rxjs';
+import { BehaviorSubject, catchError, map, of, startWith, Subject, switchMap } from 'rxjs';
 
 interface State {
   products: Product[];
   status: 'loading' | 'success' | 'error';
+  page: number;
 }
 
 @Injectable()
 
 export class ProductsStateService {
   //
-  private ProdutsList$: BehaviorSubject<any> = new BehaviorSubject([]);
+  public productsService = inject(ProductsService);
   //
-  // Función asincrona para obtener los prodcutos 
-  async getProducts() {
-    try {
-      let response = await this.productsService.getProducts();
-      let products = await response.json()
-      console.log('Products: ', products);
-      this.ProdutsList$.next(products);
-    } catch (e) {
-      console.log('Error respose: ', e);
-      this.ProdutsList$.next({});
-    }
-  }
-
   private initialState: State = {
     products: [],
-    status: 'loading' as const
+    status: 'loading' as const,
+    page: 1
   };
-
+  //
+  chagePage$ = new Subject<number>();
+  //
+  loadProducts$ = this.chagePage$.pipe(
+    startWith(1),
+    switchMap((page) => this.productsService.getProducts(page)),
+    map((products) => ({ products, status: 'success' as const })),
+    catchError(() => {
+      return of({
+        products: [],
+        status: 'error' as const
+      })
+    })
+  );
+  //
   public state = signalSlice({
     initialState: this.initialState,
     sources: [
-      this.ProdutsList$.pipe(map((products) => ({ products, status: 'success' as const }))) //
+      this.chagePage$.pipe(map((page) =>({page, status: 'loading' as const}))),
+      this.loadProducts$
+       //
     ]
   });
-
   //
-  constructor(public productsService: ProductsService) {
-    this.ProdutsList$.next([]);
-    this.getProducts();
-  };
-
+  constructor() {};
+  //
 }
