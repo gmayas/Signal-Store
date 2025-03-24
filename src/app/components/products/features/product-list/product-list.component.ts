@@ -17,7 +17,8 @@ export default class ProductListComponent {
   //
   public productsState = inject(ProductsStateService);
   public cartState = inject(CartStateService).state;
-  //  
+  //
+    
   changePage() {
     const page = this.productsState.state.page() + 1;
     this.productsState.chagePage$.next(page);

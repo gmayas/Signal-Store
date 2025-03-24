@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Product } from '../../../shared/interfaces/product.interface';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { ProductsService } from '../products.service';
-import { BehaviorSubject, catchError, map, of, startWith, Subject, switchMap } from 'rxjs';
+import { catchError, map, of, startWith, Subject, switchMap } from 'rxjs';
 
 interface State {
   products: Product[];
@@ -39,12 +39,11 @@ export class ProductsStateService {
   public state = signalSlice({
     initialState: this.initialState,
     sources: [
-      this.chagePage$.pipe(map((page) =>({page, status: 'loading' as const}))),
+      this.chagePage$.pipe(map((page) => ({ page, status: 'loading' as const }))),
       this.loadProducts$
-       //
     ]
   });
   //
-  constructor() {};
+  constructor() { };
   //
 }

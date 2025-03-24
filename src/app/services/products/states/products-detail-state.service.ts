@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Product } from '../../../shared/interfaces/product.interface';
 import { ProductsService } from '../products.service';
 import { signalSlice } from 'ngxtension/signal-slice';
-import { map, Observable, switchMap } from 'rxjs';
+import { catchError, map, Observable, of, switchMap } from 'rxjs';
 
 interface State {
   product: Product | null;
@@ -19,14 +19,22 @@ export class ProductsDetailStateService {
     status: 'loading' as const,
   };
 
-  state = signalSlice({
+  public state = signalSlice({
     initialState: this.initialState,
     actionSources: {
       getById: (_state, $: Observable<string>) =>
         $.pipe(
           switchMap((id) => this.productsService.getProduct(id)),
           map((data) => ({ product: data, status: 'success' as const })),
+          catchError(() => {
+            return of({
+              products: [],
+              status: 'error' as const
+            })
+          })
         ),
     },
   });
+
+  constructor() {}
 }

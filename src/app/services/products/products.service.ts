@@ -13,6 +13,7 @@ export class ProductsService extends ApiservicesService{
   
   // Función que retorna la informacion de los productos (lista)
   getProducts(page: number):Observable<Product[]>{
+     console.log('page:' , page)
        return this.http.get<any[]>(`${this.apiUrl}/products`,{
         params: {
           limit: page * LIMIT
