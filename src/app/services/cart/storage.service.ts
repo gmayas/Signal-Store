@@ -13,7 +13,7 @@ export class StorageService {
     return of(rowProducts ? JSON.parse(rowProducts) : []);
   };
   //
-  saveProduct(products: ProductItemCart): void{
+  saveProducts(products: ProductItemCart[]): void{
     localStorage.setItem('products', JSON.stringify(products));
   };
   //
